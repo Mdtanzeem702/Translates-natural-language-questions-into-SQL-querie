@@ -1,0 +1,6 @@
+streamlit
+python-dotenv
+langchain
+db-sqlite3
+langchain-community
+langchain-groq

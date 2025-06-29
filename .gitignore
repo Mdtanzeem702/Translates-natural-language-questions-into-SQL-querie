@@ -1,0 +1,3 @@
+virtual_venv
+.env
+student.db
