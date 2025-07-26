@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>LLM SQL Q&A</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+    <div class="container">
+        <h1>NeuroQuery – AI-Driven Database Assistant.</h1>
+        <form id="query-form">
+            <input type="text" name="question" id="question" placeholder="Ask a question..." required>
+            <button type="submit" id="ask-button">Ask</button>
+        </form>
+
+        <div id="response">
+            <h3>Answer:</h3>
+            <p id="answer"></p>
+        </div>
+    </div>
+
+    <script>
+    const form = document.getElementById('query-form');
+    const button = document.getElementById('ask-button');
+    const originalText = button.textContent;
+    let dotInterval;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const question = document.getElementById('question').value;
+
+        // Start loading animation
+        button.disabled = true;
+        button.textContent = 'Asking';
+        let dots = 0;
+        dotInterval = setInterval(() => {
+            dots = (dots + 1) % 4;
+            button.textContent = 'Asking' + '.'.repeat(dots);
+        }, 500);
+
+        try {
+            const response = await fetch('/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `question=${encodeURIComponent(question)}`
+            });
+
+            const data = await response.json();
+            document.getElementById('answer').textContent = data.answer;
+        } catch (error) {
+            document.getElementById('answer').textContent = 'Something went wrong. Please try again.';
+        } finally {
+            // Stop animation
+            clearInterval(dotInterval);
+            button.textContent = originalText;
+            button.disabled = false;
+        }
+    });
+</script>
+
+</body>
+</html>

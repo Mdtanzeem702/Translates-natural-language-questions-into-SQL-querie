@@ -1,3 +1,5 @@
-virtual_venv
 .env
-student.db
+/virtual_env/.
+/Project_code/my_database.db
+/Project_code/my_database.sqbpro
+

@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #3a4a61;
+}
+
+.container {
+    max-width: 700px;
+    /* margin: 300px; */
+    margin: auto;
+    background: rgb(109, 152, 167);
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    font-size: 16px;
+    margin-left: 10px;
+    border-radius: 5px;
+
+}
+button:hover {
+    color: #000000;
+    background-color: #f8e6d9;
+    cursor: pointer;
+}
+
+#response {
+    margin-top: 20px;
+}
+
+
+button.loading {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+}

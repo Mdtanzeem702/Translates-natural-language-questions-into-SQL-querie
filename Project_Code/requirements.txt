@@ -1,6 +1,6 @@
-streamlit
 python-dotenv
 langchain
+langgraph
 db-sqlite3
 langchain-community
-langchain-groq
+langchain-google-genai
