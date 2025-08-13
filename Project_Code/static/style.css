@@ -38,6 +38,19 @@ button:hover {
     margin-top: 20px;
 }
 
+#answer, #sql-query {
+            word-break: break-word;
+            margin-bottom: 12px;
+        }
+#sql-query {
+    background: #e0e7ef;
+    border-radius: 6px;
+    padding: 10px;
+    font-family: 'Fira Mono', 'Consolas', monospace;
+    color: #374151;
+    font-size: 0.95rem;
+    overflow-x: auto;
+}
 
 button.loading {
     animation: spin 1s linear infinite;

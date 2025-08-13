@@ -1,3 +1,4 @@
+from urllib import response
 from langchain_community.agent_toolkits import SQLDatabaseToolkit
 from langchain_community.utilities import SQLDatabase
 from langchain_core.messages import HumanMessage
@@ -64,17 +65,13 @@ class my_llm_response:
         )
 
         self.llm = init_chat_model("gemini-2.0-flash", model_provider="google_genai")
-        self.db = SQLDatabase.from_uri(r"sqlite:///C:\Users\MDTAN\OneDrive\Desktop\Msc Project UOR\Text_to_SQL_Project\NeuroQuery_AI_Driven_Database_Assistant\Project_Code\my_database.db")
+        self.db = SQLDatabase.from_uri(r"sqlite:///C:/Users/MDTAN/OneDrive/Desktop/Msc Project UOR/Text_to_SQL_Project/NeuroQuery_AI_Driven_Database_Assistant/Project_Code/Student_Project_Management_DB.db")
         self.toolkit = SQLDatabaseToolkit(db=self.db, llm=self.llm)
         self.tools = self.toolkit.get_tools()
 
         print(self.db.dialect)
         print(self.db.get_usable_table_names())
 
-        # embeddings = GoogleGenerativeAIEmbeddings(
-        #     model="models/embedding-001",
-        #     task_type="retrieval_document",  # Add this parameter
-        #     client_options={"api_key": "your-api-key"} )
         vector_store = InMemoryVectorStore(embeddings)
         retriever = vector_store.as_retriever(search_kwargs={"k": 5})
 
@@ -97,6 +94,7 @@ class my_llm_response:
     def handle_question(self, question):
         """
         Process the question using the LLM agent and return the response.
+        Returns a dict with 'query' (SQL if found) and 'answer' (final response).
         """
         response = None
         for step in self.agent.stream(
@@ -104,128 +102,42 @@ class my_llm_response:
             stream_mode="values",
         ):
             step["messages"][-1].pretty_print()
-            
-        response = step
+            response = step  # Keep updating response until last step
 
-        print(f"Received question: {question}")
+        if not response:
+            return {"query": None, "answer": "No response from agent"}
+
+        # Extract all SQL queries from the conversation
+        sql_queries = self.extract_all_sql_queries(response)
         
-        if response:
-            print(response["messages"][-1].content)
-            return {
-                "query": response["messages"][-1].content,
-                "answer": response["messages"][-1].content
-            }
+        # Get the most recent valid SQL query (if any)
+        final_sql_query = sql_queries[-1] if sql_queries else None
+        
         return {
-            "query": "No query generated",
-            "answer": "No answer generated"
+            "query": final_sql_query,
+            "answer": response["messages"][-1].content
         }
-    
 
-# from langchain_groq import ChatGroq
-# from langchain_core.prompts import ChatPromptTemplate
-# from dotenv import load_dotenv
-# import sqlite3
-
-# load_dotenv()
-# llm=ChatGroq(model='llama-3.1-8b-instant',temperature=0,max_tokens=200)
-
-
-# def get_database_info():
-    
-#     try:
-#         conn=sqlite3.Connection(r"D:\text_to_sql_project\Tanzeem_Project\my_database.db")
-#         cursor = conn.cursor()
-
-#         # Get all user-defined table names
-#         cursor.execute("""
-#             SELECT name FROM sqlite_master
-#             WHERE type='table' AND name NOT LIKE 'sqlite_%';
-#         """)
-#         tables = [row[0] for row in cursor.fetchall()]
-
-#         result = {}
-#         for table in tables:
-#             cursor.execute(f"PRAGMA table_info({table})")
-#             columns = [col[1] for col in cursor.fetchall()]  # col[1] is column name
-#             result[table] = columns
-
-#         conn.close()
-#         return result
-#     except Exception as e:
-#         print('An Execption occured!!',e)
-#         return "None"
-
-# def generate_schema_description(schema_dict):
-#     schema_lines = []
-#     for table, columns in schema_dict.items():
-#         column_list = ', '.join(columns)
-#         schema_lines.append(f"- {table.upper()} table with columns: {column_list}")
-#     return "\n".join(schema_lines)
-
-
-# def get_template_prompt(question):
-
-
-#     database_info=get_database_info()
-
-#     if database_info != "None":
-#         schema_description = generate_schema_description(database_info)
-#         print(schema_description)
-#         messages=[
-#             ("system",    f"""
-#                             You are an expert in converting English questions to SQL queries!
-                            
-#                             The database has the following tables and columns:
-#                             {schema_description}
-
-#                             Always generate correct SQL queries for the SQLite database above.
-
-#                             Example 1 – How many entries are there in STUDENT?
-#                             → SELECT COUNT(*) FROM STUDENT;
-
-#                             Example 2 – Show all teachers who teach Physics.
-#                             → SELECT * FROM TEACHER WHERE subject = "Physics";
-
-#                             Rules:
-#                             - Don't include the word "SQL" or use triple backticks in your output.
-#                             - Only return the raw SQL query.
-#                             """),
-#             ("human","Answer the user's query: {question}")
-#         ]
-#         # print("messages: ",messages)
-#         prompt=ChatPromptTemplate.from_messages(messages)
-#         final_prompt=prompt.invoke({"question": {question}})
-#         # print("final_prompt: ",final_prompt)
-
-#         return final_prompt
-#     else:
-#         messages=[
-#             ("system","you are a helpful assistant, here you'll just notify the user about that an error occured!"),
-#             ("human","Notify the user: {question}")
-#         ]
-#         # print("messages: ",messages)
-#         prompt=ChatPromptTemplate.from_messages(messages)
-#         error_final_prompt=prompt.invoke({"question": {question}})
-#         # print("final_prompt: ",final_prompt)
-
-#         return error_final_prompt
-
-
-# def handle_question(question,llm=llm):
-#     """
-#     Replace this logic with actual LLM or agent processing.
-#     """
-#     print(f"Received question: {question}")
-
-#     formated_prompt=get_template_prompt(question=question)
-    
-#     response=llm.invoke(formated_prompt)
-#     # Fake SQL and answer (replace this with real logic)
-#     print("\n\n\n respone: ",response.content)
-#     fake_sql = response.content
-#     fake_answer = response.content
-
-#     return {
-#         "query": fake_sql,
-#         "answer": fake_answer
-#     }
+    def extract_all_sql_queries(self, step):
+        """
+        Extracts all SQL queries from the agent's conversation steps.
+        Returns a list of queries in chronological order.
+        Handles cases where:
+        - Query appears multiple times (returns all)
+        - Query appears in different tools (query_checker, sql_db_query)
+        - No query is found (returns empty list)
+        """
+        queries = []
+        
+        for message in step.get("messages", []):
+            # Check for tool calls in the message
+            tool_calls = getattr(message, 'tool_calls', []) or message.additional_kwargs.get('tool_calls', [])
+            
+            for call in tool_calls:
+                # Handle both direct SQL queries and query checkers
+                if call.get("name") in ["sql_db_query", "sql_db_query_checker"]:
+                    query = call.get("args", {}).get("query")
+                    if query:
+                        queries.append(query)
+        
+        return queries

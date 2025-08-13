@@ -17,6 +17,8 @@
         <div id="response">
             <h3>Answer:</h3>
             <p id="answer"></p>
+            <h4 style="margin-bottom:4px;">SQL Query:</h4>
+            <pre id="sql-query"></pre>
         </div>
     </div>
 
@@ -48,8 +50,11 @@
 
             const data = await response.json();
             document.getElementById('answer').textContent = data.answer;
+            document.getElementById('sql-query').textContent = data.query[0];
+            
         } catch (error) {
             document.getElementById('answer').textContent = 'Something went wrong. Please try again.';
+            document.getElementById('sql-query').textContent = '';
         } finally {
             // Stop animation
             clearInterval(dotInterval);

@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="UTF-8"?><sqlb_project><db path="Student_Project_Management_DB.db" readonly="0" foreign_keys="1" case_sensitive_like="0" temp_store="0" wal_autocheckpoint="1000" synchronous="2"/><attached/><window><main_tabs open="structure browser pragmas query" current="3"/></window><tab_structure><column_width id="0" width="300"/><column_width id="1" width="0"/><column_width id="2" width="100"/><column_width id="3" width="1812"/><column_width id="4" width="0"/><expanded_item id="0" parent="1"/><expanded_item id="1" parent="1"/><expanded_item id="2" parent="1"/><expanded_item id="3" parent="1"/></tab_structure><tab_browse><table title="Faculty" custom_title="0" dock_id="4" table="4,7:mainFaculty"/><table title="Faculty" custom_title="0" dock_id="3" table="4,7:mainFaculty"/><table title="Students" custom_title="0" dock_id="5" table="4,8:mainStudents"/><dock_state state="000000ff00000000fd000000010000000200000463000002b6fc0100000001fc0000000000000463000001aa00fffffffa000000040100000005fb000000160064006f0063006b00420072006f00770073006500310000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500320000000000ffffffff0000000000000000fb000000160064006f0063006b00420072006f00770073006500330100000000ffffffff000001aa00fffffffb000000160064006f0063006b00420072006f00770073006500340100000000ffffffff0000011800fffffffb000000160064006f0063006b00420072006f00770073006500350100000000ffffffff0000012400ffffff000002580000000000000004000000040000000800000008fc00000000"/><default_encoding codec=""/><browse_table_settings><table schema="main" name="Faculty" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="64"/><column index="2" value="69"/><column index="3" value="66"/><column index="4" value="39"/><column index="5" value="73"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table><table schema="main" name="Students" show_row_id="0" encoding="" plot_x_axis="" unlock_view_pk="_rowid_" freeze_columns="0"><sort/><column_widths><column index="1" value="68"/><column index="2" value="117"/><column index="3" value="29"/><column index="4" value="54"/><column index="5" value="93"/></column_widths><filter_values/><conditional_formats/><row_id_formats/><display_formats/><hidden_columns/><plot_y_axes/><global_filter/></table></browse_table_settings></tab_browse><tab_sql><sql name="SQL 1*">-- This script creates the four tables for the student project management database.
+-- It's optimized for SQLite and includes primary and foreign key constraints.
+
+-- --------------------------------------------------------
+-- Table 1: Students
+-- Stores information about individual students.
+-- student_id is the primary key.
+-- --------------------------------------------------------
+CREATE TABLE Students (
+    student_id INTEGER PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    major TEXT NOT NULL,
+    enrollment_date TEXT NOT NULL
+);
+
+-- --------------------------------------------------------
+-- Table 2: Faculty
+-- Stores information about faculty members who supervise projects.
+-- faculty_id is the primary key.
+-- --------------------------------------------------------
+CREATE TABLE Faculty (
+    faculty_id INTEGER PRIMARY KEY,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    department TEXT NOT NULL
+);
+
+-- --------------------------------------------------------
+-- Table 3: Projects
+-- Stores information about different student projects.
+-- project_id is the primary key.
+-- It includes a foreign key to the Faculty table.
+-- --------------------------------------------------------
+CREATE TABLE Projects (
+    project_id INTEGER PRIMARY KEY,
+    project_name TEXT NOT NULL,
+    description TEXT,
+    start_date TEXT NOT NULL,
+    end_date TEXT,
+    status TEXT NOT NULL,
+    faculty_id INTEGER,
+    FOREIGN KEY (faculty_id) REFERENCES Faculty (faculty_id)
+);
+
+-- --------------------------------------------------------
+-- Table 4: Project_Members
+-- This is a junction table that links students to projects.
+-- It defines a many-to-many relationship between Students and Projects.
+-- It includes foreign keys to both the Students and Projects tables.
+-- --------------------------------------------------------
+CREATE TABLE Project_Members (
+    member_id INTEGER PRIMARY KEY,
+    project_id INTEGER NOT NULL,
+    student_id INTEGER NOT NULL,
+    role TEXT NOT NULL,
+    join_date TEXT NOT NULL,
+    FOREIGN KEY (project_id) REFERENCES Projects (project_id),
+    FOREIGN KEY (student_id) REFERENCES Students (student_id)
+);
+</sql><sql name="SQL 2*">INSERT INTO Students (student_id, first_name, last_name, email, major, enrollment_date) VALUES
+(1, 'John', 'Doe', 'john.doe@example.com', 'Computer Science', '2021-09-01'),
+(2, 'Jane', 'Smith', 'jane.smith@example.com', 'Electrical Engineering', '2022-01-15'),
+(3, 'Michael', 'Jones', 'michael.jones@example.com', 'Mechanical Engineering', '2023-09-01'),
+(4, 'Emily', 'Davis', 'emily.davis@example.com', 'Mathematics', '2021-09-01'),
+(5, 'Daniel', 'Miller', 'daniel.miller@example.com', 'Computer Science', '2022-09-01'),
+(6, 'Olivia', 'Wilson', 'olivia.wilson@example.com', 'Physics', '2023-01-10'),
+(7, 'Ethan', 'Moore', 'ethan.moore@example.com', 'Chemical Engineering', '2021-01-10'),
+(8, 'Sophia', 'Taylor', 'sophia.taylor@example.com', 'Computer Science', '2022-01-10'),
+(9, 'Noah', 'Anderson', 'noah.anderson@example.com', 'Biology', '2023-09-01'),
+(10, 'Ava', 'Jackson', 'ava.jackson@example.com', 'Computer Science', '2021-09-01'),
+(11, 'William', 'White', 'william.white@example.com', 'Electrical Engineering', '2023-01-15'),
+(12, 'Isabella', 'Harris', 'isabella.harris@example.com', 'Mechanical Engineering', '2022-09-01'),
+(13, 'James', 'Clark', 'james.clark@example.com', 'Mathematics', '2021-09-01'),
+(14, 'Mia', 'Lewis', 'mia.lewis@example.com', 'Computer Science', '2023-01-10'),
+(15, 'Benjamin', 'Hall', 'benjamin.hall@example.com', 'Physics', '2022-01-10'),
+(16, 'Charlotte', 'Allen', 'charlotte.allen@example.com', 'Chemical Engineering', '2021-09-01'),
+(17, 'Mason', 'Young', 'mason.young@example.com', 'Computer Science', '2023-09-01'),
+(18, 'Amelia', 'King', 'amelia.king@example.com', 'Biology', '2022-09-01'),
+(19, 'Jacob', 'Wright', 'jacob.wright@example.com', 'Computer Science', '2021-01-15'),
+(20, 'Harper', 'Scott', 'harper.scott@example.com', 'Electrical Engineering', '2023-01-10'),
+(21, 'Evelyn', 'Green', 'evelyn.green@example.com', 'Mechanical Engineering', '2022-01-15'),
+(22, 'Logan', 'Adams', 'logan.adams@example.com', 'Mathematics', '2021-09-01'),
+(23, 'Abigail', 'Baker', 'abigail.baker@example.com', 'Computer Science', '2023-09-01'),
+(24, 'Alexander', 'Nelson', 'alexander.nelson@example.com', 'Physics', '2022-09-01'),
+(25, 'Ella', 'Carter', 'ella.carter@example.com', 'Chemical Engineering', '2021-01-10'),
+(26, 'Sebastian', 'Mitchell', 'sebastian.mitchell@example.com', 'Computer Science', '2023-01-10'),
+(27, 'Scarlett', 'Perez', 'scarlett.perez@example.com', 'Biology', '2022-01-10'),
+(28, 'Joseph', 'Roberts', 'joseph.roberts@example.com', 'Computer Science', '2021-09-01'),
+(29, 'Grace', 'Turner', 'grace.turner@example.com', 'Electrical Engineering', '2023-09-01'),
+(30, 'Jack', 'Phillips', 'jack.phillips@example.com', 'Mechanical Engineering', '2022-09-01'),
+(31, 'Zoe', 'Campbell', 'zoe.campbell@example.com', 'Mathematics', '2021-01-15'),
+(32, 'Henry', 'Parker', 'henry.parker@example.com', 'Computer Science', '2023-01-10'),
+(33, 'Victoria', 'Evans', 'victoria.evans@example.com', 'Physics', '2022-01-10'),
+(34, 'Samuel', 'Edwards', 'samuel.edwards@example.com', 'Chemical Engineering', '2021-09-01'),
+(35, 'Chloe', 'Collins', 'chloe.collins@example.com', 'Computer Science', '2023-09-01'),
+(36, 'David', 'Stewart', 'david.stewart@example.com', 'Biology', '2022-09-01'),
+(37, 'Madison', 'Sanchez', 'madison.sanchez@example.com', 'Computer Science', '2021-01-10'),
+(38, 'Christopher', 'Morris', 'christopher.morris@example.com', 'Electrical Engineering', '2023-01-15'),
+(39, 'Lily', 'Reed', 'lily.reed@example.com', 'Mechanical Engineering', '2022-01-15'),
+(40, 'Ryan', 'Cook', 'ryan.cook@example.com', 'Mathematics', '2021-09-01'),
+(41, 'Nora', 'Morgan', 'nora.morgan@example.com', 'Computer Science', '2023-09-01'),
+(42, 'Luke', 'Bell', 'luke.bell@example.com', 'Physics', '2022-09-01'),
+(43, 'Gabriella', 'Murphy', 'gabriella.murphy@example.com', 'Chemical Engineering', '2021-01-10'),
+(44, 'Julian', 'Rogers', 'julian.rogers@example.com', 'Computer Science', '2023-01-10'),
+(45, 'Aria', 'Hughes', 'aria.hughes@example.com', 'Biology', '2022-01-10'),
+(46, 'Wyatt', 'Carter', 'wyatt.carter@example.com', 'Computer Science', '2021-09-01'),
+(47, 'Hazel', 'Bailey', 'hazel.bailey@example.com', 'Electrical Engineering', '2023-09-01'),
+(48, 'Isaac', 'Foster', 'isaac.foster@example.com', 'Mechanical Engineering', '2022-09-01'),
+(49, 'Savannah', 'Ward', 'savannah.ward@example.com', 'Mathematics', '2021-01-15'),
+(50, 'Owen', 'Cox', 'owen.cox@example.com', 'Computer Science', '2023-01-10');
+</sql><sql name="SQL 3*">-- Insert 50 random values into the Faculty table.
+-- The data is designed to fit the schema with unique emails and plausible
+-- departments that align with student majors.
+
+INSERT INTO Faculty (faculty_id, first_name, last_name, email, department) VALUES
+(1, 'Richard', 'Feynman', 'rfeynman@university.edu', 'Physics'),
+(2, 'Marie', 'Curie', 'mcurie@university.edu', 'Physics'),
+(3, 'Alan', 'Turing', 'aturing@university.edu', 'Computer Science'),
+(4, 'Ada', 'Lovelace', 'alovelace@university.edu', 'Computer Science'),
+(5, 'Katherine', 'Johnson', 'kjohnson@university.edu', 'Mathematics'),
+(6, 'Grace', 'Hopper', 'ghopper@university.edu', 'Computer Science'),
+(7, 'Nikola', 'Tesla', 'ntesla@university.edu', 'Electrical Engineering'),
+(8, 'Albert', 'Einstein', 'aeinstein@university.edu', 'Physics'),
+(9, 'Rosalind', 'Franklin', 'rfranklin@university.edu', 'Biology'),
+(10, 'Linus', 'Pauling', 'lpauling@university.edu', 'Chemical Engineering'),
+(11, 'Charles', 'Babbage', 'cbabbage@university.edu', 'Computer Science'),
+(12, 'Hedy', 'Lamarr', 'hlamarr@university.edu', 'Electrical Engineering'),
+(13, 'Emmy', 'Noether', 'enoether@university.edu', 'Mathematics'),
+(14, 'Niels', 'Bohr', 'nbohr@university.edu', 'Physics'),
+(15, 'Rachel', 'Carson', 'rcarson@university.edu', 'Biology'),
+(16, 'Sally', 'Ride', 'sride@university.edu', 'Physics'),
+(17, 'Stephen', 'Hawking', 'shawking@university.edu', 'Physics'),
+(18, 'Dorothy', 'Hodgkin', 'dhodgkin@university.edu', 'Chemical Engineering'),
+(19, 'Werner', 'Heisenberg', 'wheisenberg@university.edu', 'Physics'),
+(20, 'Max', 'Planck', 'mplank@university.edu', 'Physics'),
+(21, 'Jocelyn', 'Bell Burnell', 'jbellburnell@university.edu', 'Physics'),
+(22, 'Enrico', 'Fermi', 'efermi@university.edu', 'Physics'),
+(23, 'Lise', 'Meitner', 'lmeitner@university.edu', 'Physics'),
+(24, 'Chien-Shiung', 'Wu', 'cswu@university.edu', 'Physics'),
+(25, 'Vannevar', 'Bush', 'vbush@university.edu', 'Electrical Engineering'),
+(26, 'John', 'von Neumann', 'jvonneumann@university.edu', 'Computer Science'),
+(27, 'Tim', 'Berners-Lee', 'tbernerslee@university.edu', 'Computer Science'),
+(28, 'Barbara', 'McClintock', 'bmcclintock@university.edu', 'Biology'),
+(29, 'George', 'Washington Carver', 'gwcarver@university.edu', 'Biology'),
+(30, 'Florence', 'Nightingale', 'fnightingale@university.edu', 'Mathematics'),
+(31, 'Galileo', 'Galilei', 'ggalilei@university.edu', 'Physics'),
+(32, 'Isaac', 'Newton', 'inewton@university.edu', 'Physics'),
+(33, 'Johannes', 'Kepler', 'jkepler@university.edu', 'Physics'),
+(34, 'Gregor', 'Mendel', 'gmendel@university.edu', 'Biology'),
+(35, 'Pierre', 'de Fermat', 'pdefermat@university.edu', 'Mathematics'),
+(36, 'Leonhard', 'Euler', 'leuler@university.edu', 'Mathematics'),
+(37, 'Ada', 'Yonath', 'ayonath@university.edu', 'Chemical Engineering'),
+(38, 'Rita', 'Levi-Montalcini', 'rlevimontalcini@university.edu', 'Biology'),
+(39, 'Subrahmanyan', 'Chandrasekhar', 'schandrasekhar@university.edu', 'Physics'),
+(40, 'Dian', 'Fossey', 'dfossey@university.edu', 'Biology'),
+(41, 'Carl', 'Sagan', 'csagan@university.edu', 'Physics'),
+(42, 'Edwin', 'Hubble', 'ehubble@university.edu', 'Physics'),
+(43, 'Maria', 'Goeppert Mayer', 'mgmayer@university.edu', 'Physics'),
+(44, 'Maxine', 'Singer', 'msinger@university.edu', 'Biology'),
+(45, 'Vera', 'Rubin', 'vrubin@university.edu', 'Physics'),
+(46, 'Edison', 'Wang', 'ewang@university.edu', 'Computer Science'),
+(47, 'Hao', 'Li', 'hli@university.edu', 'Electrical Engineering'),
+(48, 'Sanjay', 'Gupta', 'sgupta@university.edu', 'Mechanical Engineering'),
+(49, 'Chandra', 'Sharma', 'csharma@university.edu', 'Chemical Engineering'),
+(50, 'Naomi', 'Ono', 'nono@university.edu', 'Biology');</sql><sql name="SQL 4*">-- Insert 50 random values into the Projects table.
+-- The data is designed to fit the schema with plausible project details
+-- and a foreign key to the Faculty table.
+
+INSERT INTO Projects (project_id, project_name, description, start_date, end_date, status, faculty_id) VALUES
+(1, 'Quantum Computing Algorithm', 'Developing a new algorithm for a quantum computer to solve complex optimization problems.', '2023-01-20', '2024-12-15', 'In Progress', 3),
+(2, 'Machine Learning for Cancer Detection', 'Using deep learning models to analyze medical images for early detection of cancerous cells.', '2023-05-10', '2024-10-30', 'In Progress', 44),
+(3, 'Robotic Arm for Precision Surgery', 'Designing and building a robotic arm for minimally invasive surgical procedures.', '2022-09-01', '2024-06-25', 'Completed', 48),
+(4, 'Renewable Energy Grid Optimization', 'Simulating and optimizing a smart grid that uses a combination of solar and wind energy.', '2023-03-05', '2024-11-20', 'In Progress', 7),
+(5, 'Biodiversity Study of Local Wetlands', 'Conducting a longitudinal study of plant and animal species in a local wetland area.', '2022-10-15', '2024-08-01', 'In Progress', 9),
+(6, 'Smart Home Automation System', 'Creating a comprehensive system for home automation using IoT devices and a central hub.', '2023-02-01', '2024-05-30', 'In Progress', 25),
+(7, 'Predictive Analytics for Stock Market', 'Developing a model to predict stock market trends using historical data and news sentiment analysis.', '2023-08-10', NULL, 'In Progress', 6),
+(8, 'Chemical Synthesis of New Polymer', 'Synthesizing a novel polymer with enhanced tensile strength for industrial applications.', '2022-04-20', '2024-09-01', 'In Progress', 10),
+(9, 'Particle Physics Simulation', 'Simulating particle collisions in a virtual environment to study subatomic particles.', '2023-04-12', '2024-12-10', 'In Progress', 1),
+(10, 'Archaeological Site Mapping with Drones', 'Using drones and photogrammetry to create 3D maps of a historic archaeological site.', '2023-07-01', '2024-07-31', 'In Progress', 35),
+(11, 'Genetic Engineering for Crop Resistance', 'Researching methods to genetically modify crops to be more resistant to pests and disease.', '2022-11-05', '2024-05-15', 'Completed', 34),
+(12, 'Human-Robot Interaction for Elderly Care', 'Designing a user interface for a robot assistant to help elderly individuals with daily tasks.', '2023-06-01', NULL, 'In Progress', 46),
+(13, 'Astronomy Data Analysis', 'Analyzing data from a powerful telescope to identify new exoplanets.', '2022-08-15', '2024-08-15', 'Completed', 42),
+(14, 'Urban Planning and Traffic Simulation', 'Creating a simulation to model traffic flow and pedestrian movement in a major city.', '2023-09-10', '2024-11-01', 'In Progress', 5),
+(15, 'Water Purification System Development', 'Building a low-cost, high-efficiency water purification system for developing nations.', '2023-01-30', '2024-07-20', 'In Progress', 18),
+(16, 'Virtual Reality Museum Tour', 'Developing a VR application that allows users to tour famous museums from around the world.', '2023-04-25', '2024-09-01', 'In Progress', 11),
+(17, 'Bioremediation of Contaminated Soil', 'Using microorganisms to clean up soil that has been contaminated with heavy metals.', '2022-12-01', '2024-10-10', 'In Progress', 28),
+(18, 'AI for Natural Language Processing', 'Creating a more accurate and nuanced AI model for understanding and generating human language.', '2023-06-15', NULL, 'In Progress', 26),
+(19, '3D Printing of Medical Implants', 'Researching materials and techniques for 3D printing custom medical implants.', '2022-07-10', '2024-06-01', 'Completed', 48),
+(20, 'Mathematical Modeling of Epidemics', 'Developing a mathematical model to predict the spread and impact of viral outbreaks.', '2023-02-20', '2024-07-15', 'In Progress', 13),
+(21, 'Autonomous Vehicle Navigation System', 'Building a software system for self-driving cars, focusing on sensor fusion and path planning.', '2023-08-01', NULL, 'In Progress', 47),
+(22, 'Drug Discovery with AI', 'Using artificial intelligence to screen millions of compounds and identify potential new drugs.', '2023-03-15', '2024-12-01', 'In Progress', 37),
+(23, 'Microcontroller-Based Weather Station', 'Designing and building a low-power weather station that can be deployed in remote locations.', '2022-09-20', '2024-05-01', 'Completed', 25),
+(24, 'Marine Biology Census of a Coral Reef', 'Using underwater cameras and computer vision to perform an automated census of a coral reef ecosystem.', '2023-11-01', NULL, 'In Progress', 44),
+(25, 'Network Security for IoT Devices', 'Developing new security protocols and encryption methods for Internet of Things devices.', '2023-05-01', '2024-10-01', 'In Progress', 6),
+(26, 'Soil Chemistry Analysis for Sustainable Farming', 'Studying the chemical composition of soil to advise on best practices for sustainable agriculture.', '2022-08-25', '2024-07-25', 'Completed', 29),
+(27, 'Exoplanet Habitability Model', 'Creating a computer model to assess the potential habitability of newly discovered exoplanets.', '2023-01-05', '2024-11-15', 'In Progress', 17),
+(28, 'Renewable Energy Storage Solutions', 'Developing new battery technologies to store energy from renewable sources more efficiently.', '2023-07-20', NULL, 'In Progress', 7),
+(29, 'Blockchain for Supply Chain Management', 'Implementing a blockchain system to track products from manufacturing to sale.', '2022-10-01', '2024-06-30', 'Completed', 27),
+(30, 'Mathematical Proof of a New Theorem', 'Working on a rigorous proof for a complex theorem in number theory.', '2023-04-01', NULL, 'In Progress', 13),
+(31, 'Protein Folding Simulation', 'Using advanced computing power to simulate how proteins fold, which is key to understanding many diseases.', '2023-02-15', '2024-12-20', 'In Progress', 44),
+(32, 'High-Efficiency Engine Design', 'Designing and testing a more fuel-efficient internal combustion engine.', '2022-11-10', '2024-08-10', 'In Progress', 48),
+(33, 'Data Privacy and Security Framework', 'Creating a new framework for ensuring data privacy in large-scale online applications.', '2023-06-20', NULL, 'In Progress', 6),
+(34, 'Asteroid Tracking System', 'Developing a system to automatically track near-earth asteroids using telescope data.', '2023-03-25', '2024-11-10', 'In Progress', 45),
+(35, 'Bio-inspired Robotics', 'Building robots that mimic the movement and behavior of insects to navigate complex environments.', '2022-09-15', '2024-05-20', 'Completed', 48),
+(36, 'Microplastics in the Ocean Study', 'Collecting and analyzing samples of ocean water to determine the prevalence of microplastics.', '2023-10-01', NULL, 'In Progress', 15),
+(37, 'Advanced Cryptography for Secure Communication', 'Inventing a new cryptographic method to secure communications in a post-quantum world.', '2023-01-10', '2024-09-15', 'In Progress', 3),
+(38, 'Genomics Data Analysis', 'Analyzing large genomic datasets to identify markers for specific diseases.', '2022-08-05', '2024-06-15', 'Completed', 44),
+(39, 'Solar Panel Efficiency Improvement', 'Researching new materials and designs to improve the efficiency of solar panels.', '2023-04-01', '2024-10-01', 'In Progress', 7),
+(40, 'Computational Fluid Dynamics for Aerodynamics', 'Using computer simulations to study how air flows over airplane wings to improve their design.', '2022-12-10', '2024-07-01', 'In Progress', 48),
+(41, 'AI-powered Medical Diagnosis', 'Creating an AI system to assist doctors in diagnosing rare diseases based on patient symptoms and test results.', '2023-05-15', '2024-12-31', 'In Progress', 6),
+(42, 'Mathematical Proof of the Riemann Hypothesis', 'An ongoing, collaborative project to tackle one of the most famous unsolved problems in mathematics.', '2022-01-01', NULL, 'In Progress', 13),
+(43, 'Development of a New Vaccine', 'Working on a new vaccine for a common viral infection.', '2023-09-01', NULL, 'In Progress', 28),
+(44, 'Quantum Teleportation Simulation', 'Simulating the principles of quantum teleportation in a software environment.', '2023-02-10', '2024-08-25', 'In Progress', 3),
+(45, 'Sustainable Building Materials', 'Researching and testing new, environmentally friendly materials for construction.', '2022-07-20', '2024-05-01', 'Completed', 18),
+(46, 'Bioinformatics Tool Development', 'Creating a new software tool for bioinformaticians to analyze DNA sequences more efficiently.', '2023-04-10', '2024-11-01', 'In Progress', 46),
+(47, 'Augmented Reality for Education', 'Developing an AR application to help students visualize complex scientific concepts.', '2023-06-25', NULL, 'In Progress', 4),
+(48, 'Geological Mapping of a New Mountain Range', 'Using seismic data and satellite imagery to create a detailed geological map of a recently discovered mountain range.', '2022-10-05', '2024-06-01', 'Completed', 14),
+(49, 'Drug Delivery System Enhancement', 'Developing a new method for targeted drug delivery to improve treatment efficacy.', '2023-03-01', '2024-09-30', 'In Progress', 37),
+(50, 'Social Network Analysis of Historical Data', 'Analyzing historical communication data to understand social networks in a past society.', '2022-09-01', '2024-05-20', 'Completed', 5);
+</sql><sql name="SQL 5*">-- Insert 50 random values into the Project_Members table.
+-- This table links students to projects and includes foreign keys to both
+-- the Students and Projects tables.
+
+INSERT INTO Project_Members (member_id, project_id, student_id, role, join_date) VALUES
+(1, 1, 1, 'Team Lead', '2023-01-25'),
+(2, 1, 8, 'Researcher', '2023-02-10'),
+(3, 2, 18, 'Data Analyst', '2023-05-15'),
+(4, 2, 44, 'Developer', '2023-05-15'),
+(5, 3, 3, 'Mechanical Engineer', '2022-09-05'),
+(6, 3, 39, 'Team Lead', '2022-09-05'),
+(7, 4, 11, 'Electrical Engineer', '2023-03-10'),
+(8, 4, 47, 'Team Lead', '2023-03-10'),
+(9, 5, 9, 'Biologist', '2022-10-20'),
+(10, 5, 27, 'Data Analyst', '2022-10-20'),
+(11, 6, 23, 'Developer', '2023-02-05'),
+(12, 6, 35, 'Team Lead', '2023-02-05'),
+(13, 7, 5, 'Data Scientist', '2023-08-15'),
+(14, 7, 10, 'Team Lead', '2023-08-15'),
+(15, 8, 7, 'Chemist', '2022-04-25'),
+(16, 8, 16, 'Team Lead', '2022-04-25'),
+(17, 9, 6, 'Physicist', '2023-04-15'),
+(18, 9, 15, 'Researcher', '2023-04-15'),
+(19, 10, 22, 'Archaeologist', '2023-07-05'),
+(20, 10, 31, 'Team Lead', '2023-07-05'),
+(21, 11, 19, 'Genetic Engineer', '2022-11-10'),
+(22, 11, 38, 'Biologist', '2022-11-10'),
+(23, 12, 12, 'Developer', '2023-06-05'),
+(24, 12, 46, 'UX Designer', '2023-06-05'),
+(25, 13, 24, 'Astronomer', '2022-08-20'),
+(26, 13, 42, 'Data Analyst', '2022-08-20'),
+(27, 14, 4, 'Urban Planner', '2023-09-15'),
+(28, 14, 13, 'Mathematician', '2023-09-15'),
+(29, 15, 17, 'Environmental Engineer', '2023-02-01'),
+(30, 15, 34, 'Team Lead', '2023-02-01'),
+(31, 16, 20, 'VR Developer', '2023-04-30'),
+(32, 16, 26, '3D Artist', '2023-04-30'),
+(33, 17, 30, 'Microbiologist', '2022-12-05'),
+(34, 17, 43, 'Team Lead', '2022-12-05'),
+(35, 18, 2, 'AI Researcher', '2023-06-20'),
+(36, 18, 28, 'Developer', '2023-06-20'),
+(37, 19, 36, 'Team Lead', '2022-07-15'),
+(38, 19, 45, 'Material Scientist', '2022-07-15'),
+(39, 20, 49, 'Mathematician', '2023-02-25'),
+(40, 20, 50, 'Data Analyst', '2023-02-25'),
+(41, 21, 21, 'Software Engineer', '2023-08-05'),
+(42, 21, 32, 'Team Lead', '2023-08-05'),
+(43, 22, 41, 'Researcher', '2023-03-20'),
+(44, 22, 14, 'Team Lead', '2023-03-20'),
+(45, 23, 29, 'Hardware Engineer', '2022-09-25'),
+(46, 23, 33, 'Embedded Systems', '2022-09-25'),
+(47, 24, 25, 'Marine Biologist', '2023-11-05'),
+(48, 24, 37, 'Computer Vision', '2023-11-05'),
+(49, 25, 48, 'Security Analyst', '2023-05-05'),
+(50, 25, 40, 'Team Lead', '2023-05-05');</sql><current_tab id="0"/></tab_sql></sqlb_project>

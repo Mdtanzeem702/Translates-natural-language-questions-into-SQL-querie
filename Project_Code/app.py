@@ -15,8 +15,10 @@ def ask():
     # Placeholder response from handler (you'll add LLM later)
     obj=my_llm_response()
     result = obj.handle_question(question=user_question)
-    
-    return jsonify(result)
+    print("result in app.py: ",result)
+
+
+    return jsonify({"answer": result["answer"], "query": [result["query"]]})
 
 if __name__ == '__main__':
     app.run(debug=True)
